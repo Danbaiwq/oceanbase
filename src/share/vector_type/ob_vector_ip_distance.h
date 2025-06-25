@@ -266,16 +266,10 @@ inline static int ip_distance_neon(const float *x, const float *y, const int64_t
     float32x4x4_t a = vld1q_f32_x4(x + dim - d);
     float32x4x4_t b = vld1q_f32_x4(y + dim - d);
     float32x4x4_t c;
-
-    c.val[0] = vsubq_f32(a.val[0], b.val[0]);
-    c.val[1] = vsubq_f32(a.val[1], b.val[1]);
-    c.val[2] = vsubq_f32(a.val[2], b.val[2]);
-    c.val[3] = vsubq_f32(a.val[3], b.val[3]);
-
-    c.val[0] = vmulq_f32(c.val[0], c.val[0]);
-    c.val[1] = vmulq_f32(c.val[1], c.val[1]);
-    c.val[2] = vmulq_f32(c.val[2], c.val[2]);
-    c.val[3] = vmulq_f32(c.val[3], c.val[3]);
+    c.val[0] = vmulq_f32(a.val[0], b.val[0]);
+    c.val[1] = vmulq_f32(a.val[1], b.val[1]);
+    c.val[2] = vmulq_f32(a.val[2], b.val[2]);
+    c.val[3] = vmulq_f32(a.val[3], b.val[3]);
 
     c.val[0] = vaddq_f32(c.val[0], c.val[1]);
     c.val[2] = vaddq_f32(c.val[2], c.val[3]);
@@ -290,12 +284,8 @@ inline static int ip_distance_neon(const float *x, const float *y, const int64_t
     float32x4x2_t a = vld1q_f32_x2(x + dim - d);
     float32x4x2_t b = vld1q_f32_x2(y + dim - d);
     float32x4x2_t c;
-    c.val[0] = vsubq_f32(a.val[0], b.val[0]);
-    c.val[1] = vsubq_f32(a.val[1], b.val[1]);
-
-    c.val[0] = vmulq_f32(c.val[0], c.val[0]);
-    c.val[1] = vmulq_f32(c.val[1], c.val[1]);
-
+    c.val[0] = vmulq_f32(a.val[0], b.val[0]);
+    c.val[1] = vmulq_f32(a.val[1], b.val[1]);
     c.val[0] = vaddq_f32(c.val[0], c.val[1]);
     sum = vaddq_f32(sum, c.val[0]);
     d -= 8;
@@ -305,9 +295,7 @@ inline static int ip_distance_neon(const float *x, const float *y, const int64_t
     float32x4_t a = vld1q_f32(x + dim - d);
     float32x4_t b = vld1q_f32(y + dim - d);
     float32x4_t c;
-    c = vsubq_f32(a, b);
-    c = vmulq_f32(c, c);
-
+    c = vmulq_f32(a, b);
     sum = vaddq_f32(sum, c);
     d -= 4;
   }
@@ -315,24 +303,24 @@ inline static int ip_distance_neon(const float *x, const float *y, const int64_t
   float32x4_t res_x = vdupq_n_f32(0.0f);
   float32x4_t res_y = vdupq_n_f32(0.0f);
   if (d >= 3) {
-    res_x = vld1q_lane_f32(x + dim - d, res_x, 2);
-    res_y = vld1q_lane_f32(y + dim - d, res_y, 2);
-    d -= 1;
+      res_x = vld1q_lane_f32(x + dim - d, res_x, 2);
+      res_y = vld1q_lane_f32(y + dim - d, res_y, 2);
+      d -= 1;
   }
 
   if (d >= 2) {
-    res_x = vld1q_lane_f32(x + dim - d, res_x, 1);
-    res_y = vld1q_lane_f32(y + dim - d, res_y, 1);
-    d -= 1;
+      res_x = vld1q_lane_f32(x + dim - d, res_x, 1);
+      res_y = vld1q_lane_f32(y + dim - d, res_y, 1);
+      d -= 1;
   }
 
   if (d >= 1) {
-    res_x = vld1q_lane_f32(x + dim - d, res_x, 0);
-    res_y = vld1q_lane_f32(y + dim - d, res_y, 0);
-    d -= 1;
+      res_x = vld1q_lane_f32(x + dim - d, res_x, 0);
+      res_y = vld1q_lane_f32(y + dim - d, res_y, 0);
+      d -= 1;
   }
 
-  sum = vaddq_f32(sum, vmulq_f32(vsubq_f32(res_x, res_y), vsubq_f32(res_x, res_y)));
+  sum = vaddq_f32(sum, vmulq_f32(res_x, res_y));
   distance = vaddvq_f32(sum);
   return ret;
 }
